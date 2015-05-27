@@ -9,7 +9,7 @@
 
 WSADATA wsadata;
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     // Initialization
     struct sockaddr_in remoteaddr;
@@ -20,19 +20,19 @@ int main(int argc, char *argv[])
     memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up 
 
     //WSASTARTUP 
-    if (WSAStartup(WSVERS, &wsadata) != 0) 
+    if (WSAStartup(WSVERS, &wsadata) != 0)
     {
         WSACleanup();
         printf("WSAStartup failed\n");
         exit(1);
     }
 
-    if (argc != 3) 
+    if (argc != 3)
     {
         printf("USAGE: client IP-address port\n");
         exit(1);
     }
-    else 
+    else
     {
         remoteaddr.sin_addr.s_addr = inet_addr(argv[1]);    //IP address
         remoteaddr.sin_port = htons((u_short)atoi(argv[2]));//Port number
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     //CREATE CLIENT'S SOCKET 
     s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s < 0) 
+    if (s < 0)
     {
         printf("socket failed\n");
         exit(1);
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     //*******************************************************************
     memset(&send_buffer, 0, BUFFESIZE);
     fgets(send_buffer, SEGMENTSIZE, stdin);
-    while (strncmp(send_buffer, ".", 1) != 0) 
+    while (strncmp(send_buffer, ".", 1) != 0)
     {
         send_buffer[strlen(send_buffer) - 1] = '\0';//strip send_buffer from '\n'
         strcat(send_buffer, "\r\n");
