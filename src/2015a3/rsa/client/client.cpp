@@ -6,13 +6,10 @@
 #include <string>
 using std::string;
 #include <iostream>
-using std::cout;
-using std::endl;
-using std::cin;
+using std::cout; using std::endl; using std::cin;
 
-#define WSVERS MAKEWORD(2,0)
-#define BUFFESIZE 200 
-#define SEGMENTSIZE 70
+const int WSVERS = MAKEWORD(2, 0);
+const int BUFFESIZE = 200;
 
 auto make_remote_address(char* arr[]) -> struct sockaddr_in
 {
@@ -40,7 +37,7 @@ auto setup_win_sock_api(WORD version_required) -> WSADATA
     if (WSAStartup(WSVERS, &wsadata) != 0)
     {
         WSACleanup();
-        printf("WSAStartup failed\n");
+        cout << "WSAStartup failed\n";
         exit(1);
     }
     return wsadata;
@@ -57,45 +54,43 @@ auto main(int argc, char *argv[]) -> int
     auto s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0)
     {
-        printf("socket failed\n");
+        cout << "socket failed\n";
         exit(1);
     }
 
     //CONNECT
     if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) 
     {
-        printf("connect failed\n");
+        cout << "connect failed\n";
         exit(1);
     }
 
-    //Get input while user don't type "."
-    char receive_buffer[BUFFESIZE];
     for (auto send_buffer = string{}; cin >> send_buffer; /* */)
     {
         if (send_buffer == ".") break; else send_buffer += "\r\n";
+
         //SEND
         if (0 > send(s, send_buffer.c_str(), send_buffer.size(), 0))
         {
-            printf("send failed\n");
+            cout <<"send failed\n";
             exit(1);
         }
 
-        for (int n = 0; true; /* */)
+        auto receive_buffer = string(BUFFESIZE, char(0));
+        for (auto curr = receive_buffer.begin(); true; )
         {
-            //*******************************************************************
             //RECEIVE
-            //*******************************************************************
-            if (0 >= recv(s, &receive_buffer[n], 1, 0))
+            if (0 >= recv(s, &*curr, 1, 0))
             {
-                printf("recv failed\n");
+                cout << "recv failed\n";
                 exit(1);
             }
-            if (receive_buffer[n] == '\n') 
+            if (*curr == '\n') 
             {  /*end on a LF*/
-                receive_buffer[n] = '\0';
+                receive_buffer = string(receive_buffer.begin(), curr);
                 break;
             }
-            if (receive_buffer[n] != '\r') n++;   /*ignore CR's*/
+            if (*curr != '\r') ++curr;   /*ignore CR's*/
         }
         cout << receive_buffer << endl;
     }
