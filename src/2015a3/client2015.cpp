@@ -1,66 +1,35 @@
-//159.334 - Networks
-// CLIENT updated 2013
-//This prototype can be compiled with gcc (or g++) in both Linux and Windows
-//To see the differences, just follow the ifdefs
-#if defined __unix__ || defined __APPLE__
-#include <unistd.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h> 
-#include <string.h>
-#include <sys/types.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h>
-#elif defined _WIN32 
-# include <windows.h>
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock.h>
 #define WSVERS MAKEWORD(2,0)
-#endif
-
 
 #define BUFFESIZE 200 
-//remember that the BUFFESIZE has to be at least big enough to receive the answer from the server
 #define SEGMENTSIZE 70
-//segment size, i.e., if fgets gets more than this number of bytes it segments the message
 
-#if defined __unix__ || defined __APPLE__
-
-#elif defined _WIN32 
 WSADATA wsadata;
-#endif
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     //*******************************************************************
     // Initialization
     //*******************************************************************
     struct sockaddr_in remoteaddr;
     struct hostent *h;
 
-#if defined __unix__ || defined __APPLE__
-    int s;
-#elif defined _WIN32 
     SOCKET s;
-#endif
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
     int n, bytes;
     memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up 
     //*******************************************************************
     //WSASTARTUP 
     //*******************************************************************
-#if defined __unix__ || defined __APPLE__
-    //nothing to do in Linux
-#elif defined _WIN32 
     if (WSAStartup(WSVERS, &wsadata) != 0) {
         WSACleanup();
         printf("WSAStartup failed\n");
         exit(1);
     }
-#endif
-    //*******************************************************************
-    //	Dealing with user's arguments
-    //*******************************************************************
+
     if (argc != 3) {
         printf("USAGE: client IP-address port\n");
         exit(1);
