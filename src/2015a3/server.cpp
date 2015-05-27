@@ -70,7 +70,6 @@ int main(int argc, char *argv[])
             {
                 //RECEIVE
                 bytes = recv(ns, &receive_buffer[n], 1, 0);
-
                 //PROCESS REQUEST
                 if ((bytes <= 0)) break;
                 if (receive_buffer[n] == '\n')
@@ -90,21 +89,16 @@ int main(int argc, char *argv[])
               */
             decryptor(receive_buffer, Keys[Key_counter][0], Keys[Key_counter][2]);
             printf("the decrpted message is:'%s'\n...................................\n", receive_buffer);
-            //printf("");
-            //SEND
+            
             bytes = send(ns, send_buffer, strlen(send_buffer), 0);
             if (bytes < 0) break;
         }
         //CLOSE SOCKET
-        closesocket(ns);//close connecting socket
+        closesocket(ns); 
         printf("disconnected from %s\n", inet_ntoa(remoteaddr.sin_addr));
-        /**
-          * @brief  next key
-          */
         Key_counter++;
     }
-
-    closesocket(s);//close listening socket
+    closesocket(s);
     return 0;
 }
 
