@@ -79,8 +79,8 @@ auto main(int argc, char *argv[]) -> int
         //*******************************************************************
         //SEND
         //*******************************************************************
-        bytes = send(s, send_buffer, strlen(send_buffer), 0);
-        if (bytes < 0) {
+        if (0 > send(s, send_buffer, strlen(send_buffer), 0))
+        {
             printf("send failed\n");
             exit(1);
         }
@@ -90,8 +90,7 @@ auto main(int argc, char *argv[]) -> int
             //*******************************************************************
             //RECEIVE
             //*******************************************************************
-            bytes = recv(s, &receive_buffer[n], 1, 0);
-            if ((bytes <= 0)) 
+            if (0 >= recv(s, &receive_buffer[n], 1, 0))
             {
                 printf("recv failed\n");
                 exit(1);
@@ -103,7 +102,7 @@ auto main(int argc, char *argv[]) -> int
             }
             if (receive_buffer[n] != '\r') n++;   /*ignore CR's*/
         }
-        printf("%s \n", receive_buffer);// line received
+        cout << receive_buffer << endl;
         memset(&send_buffer, 0, BUFFESIZE);
         fgets(send_buffer, SEGMENTSIZE, stdin);
     }
