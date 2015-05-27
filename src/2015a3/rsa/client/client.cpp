@@ -3,21 +3,37 @@
 #include <stdlib.h>
 #include <winsock.h>
 
+#include <string>
+#include <iostream>
+using std::cout;
+using std::endl;
+
 #define WSVERS MAKEWORD(2,0)
 #define BUFFESIZE 200 
 #define SEGMENTSIZE 70
 
-
-int main(int argc, char *argv[])
+auto make_remote_address(char* arr[]) -> struct sockaddr_in
 {
-    // Initialization
-    struct sockaddr_in remoteaddr;
-    memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up
+    struct sockaddr_in address;
+    memset(&address, 0, sizeof(address));
+    address.sin_addr.s_addr = inet_addr(arr[1]);    //IP address
+    address.sin_port = htons((u_short)atoi(arr[2]));//Port number
+    address.sin_family = AF_INET;
 
-    char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
-    int n, bytes;
+    return address;
+}
 
-    //WSASTARTUP 
+auto handle_user_input(int arguments_count) -> void
+{
+    if (arguments_count != 3)
+    {
+        cout << "USAGE: client IP-address port" << endl;
+        exit(1);
+    }
+}
+
+auto setup_win_sock_api(WORD version_required) -> WSADATA
+{
     WSADATA wsadata;
     if (WSAStartup(WSVERS, &wsadata) != 0)
     {
@@ -25,19 +41,18 @@ int main(int argc, char *argv[])
         printf("WSAStartup failed\n");
         exit(1);
     }
+    return wsadata;
+}
 
-    //handle user input
-    if (argc != 3)
-    {
-        printf("USAGE: client IP-address port\n");
-        exit(1);
-    }
-    else
-    {
-        remoteaddr.sin_addr.s_addr = inet_addr(argv[1]);    //IP address
-        remoteaddr.sin_port = htons((u_short)atoi(argv[2]));//Port number
-        remoteaddr.sin_family = AF_INET;
-    }
+
+auto main(int argc, char *argv[]) -> int
+{
+    handle_user_input(argc);
+    auto wsa_data = setup_win_sock_api(WSVERS);
+    auto remoteaddr = make_remote_address(argv);
+
+    char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
+    int n, bytes;
 
     //CREATE CLIENT'S SOCKET 
     auto s = socket(AF_INET, SOCK_STREAM, 0);
@@ -46,7 +61,6 @@ int main(int argc, char *argv[])
         printf("socket failed\n");
         exit(1);
     }
-    //remoteaddr.sin_family = AF_INET;
 
     //CONNECT
     if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) 
