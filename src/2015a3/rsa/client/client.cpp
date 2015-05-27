@@ -7,17 +7,18 @@
 #define BUFFESIZE 200 
 #define SEGMENTSIZE 70
 
-WSADATA wsadata;
 
 int main(int argc, char *argv[])
 {
     // Initialization
     struct sockaddr_in remoteaddr;
+    memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up
+
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
     int n, bytes;
-    memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up 
 
     //WSASTARTUP 
+    WSADATA wsadata;
     if (WSAStartup(WSVERS, &wsadata) != 0)
     {
         WSACleanup();
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
     {
         remoteaddr.sin_addr.s_addr = inet_addr(argv[1]);    //IP address
         remoteaddr.sin_port = htons((u_short)atoi(argv[2]));//Port number
+        remoteaddr.sin_family = AF_INET;
     }
 
     //CREATE CLIENT'S SOCKET 
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
         printf("socket failed\n");
         exit(1);
     }
-    remoteaddr.sin_family = AF_INET;
+    //remoteaddr.sin_family = AF_INET;
 
     //CONNECT
     if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) 
@@ -75,11 +77,13 @@ int main(int argc, char *argv[])
             //RECEIVE
             //*******************************************************************
             bytes = recv(s, &receive_buffer[n], 1, 0);
-            if ((bytes <= 0)) {
+            if ((bytes <= 0)) 
+            {
                 printf("recv failed\n");
                 exit(1);
             }
-            if (receive_buffer[n] == '\n') {  /*end on a LF*/
+            if (receive_buffer[n] == '\n') 
+            {  /*end on a LF*/
                 receive_buffer[n] = '\0';
                 break;
             }
