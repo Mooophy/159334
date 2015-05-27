@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock.h>
-#define WSVERS MAKEWORD(2,0)
 
+#define WSVERS MAKEWORD(2,0)
 #define BUFFESIZE 200 
 #define SEGMENTSIZE 70
 
@@ -13,8 +13,6 @@ int main(int argc, char *argv[])
 {
     // Initialization
     struct sockaddr_in remoteaddr;
-    struct hostent *h;
-    SOCKET s;
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
     int n, bytes;
     memset(&remoteaddr, 0, sizeof(remoteaddr)); //clean up 
@@ -27,6 +25,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    //handle user input
     if (argc != 3)
     {
         printf("USAGE: client IP-address port\n");
@@ -39,23 +38,22 @@ int main(int argc, char *argv[])
     }
 
     //CREATE CLIENT'S SOCKET 
-    s = socket(AF_INET, SOCK_STREAM, 0);
+    auto s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0)
     {
         printf("socket failed\n");
         exit(1);
     }
     remoteaddr.sin_family = AF_INET;
-    //*******************************************************************
+
     //CONNECT
-    //*******************************************************************
-    if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) {
+    if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) 
+    {
         printf("connect failed\n");
         exit(1);
     }
-    //*******************************************************************
+
     //Get input while user don't type "."
-    //*******************************************************************
     memset(&send_buffer, 0, BUFFESIZE);
     fgets(send_buffer, SEGMENTSIZE, stdin);
     while (strncmp(send_buffer, ".", 1) != 0)
@@ -71,7 +69,8 @@ int main(int argc, char *argv[])
             exit(1);
         }
         n = 0;
-        while (1) {
+        while (1) 
+        {
             //*******************************************************************
             //RECEIVE
             //*******************************************************************
@@ -90,14 +89,7 @@ int main(int argc, char *argv[])
         memset(&send_buffer, 0, BUFFESIZE);
         fgets(send_buffer, SEGMENTSIZE, stdin);
     }
-    //*******************************************************************
-    //CLOSESOCKET   
-    //*******************************************************************
-#if defined __unix__ || defined __APPLE__
-    close(s);
-#elif defined _WIN32 
-    closesocket(s);
-#endif
 
+    closesocket(s);
     return 0;
 }

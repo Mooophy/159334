@@ -64,9 +64,7 @@ int main(int argc, char *argv[]) {
     //********************************************************************
 
     s = socket(PF_INET, SOCK_STREAM, 0);
-    if (s < 0) {
-        printf("socket failed\n");
-    }
+    if (s < 0) printf("socket failed\n");
 
     localaddr.sin_family = AF_INET;
     if (argc == 2) localaddr.sin_port = htons((u_short)atoi(argv[1]));
@@ -75,7 +73,8 @@ int main(int argc, char *argv[]) {
     //********************************************************************
     //BIND
     //********************************************************************
-    if (bind(s, (struct sockaddr *)(&localaddr), sizeof(localaddr)) != 0) {
+    if (bind(s, (struct sockaddr *)(&localaddr), sizeof(localaddr)) != 0)
+    {
         printf("Bind failed!\n");
         exit(0);
     }
