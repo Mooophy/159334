@@ -4,9 +4,11 @@
 #include <winsock.h>
 
 #include <string>
+using std::string;
 #include <iostream>
 using std::cout;
 using std::endl;
+using std::cin;
 
 #define WSVERS MAKEWORD(2,0)
 #define BUFFESIZE 200 
@@ -51,9 +53,6 @@ auto main(int argc, char *argv[]) -> int
     auto wsa_data = setup_win_sock_api(WSVERS);
     auto remoteaddr = make_remote_address(argv);
 
-    char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
-    int n, bytes;
-
     //CREATE CLIENT'S SOCKET 
     auto s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0)
@@ -70,22 +69,18 @@ auto main(int argc, char *argv[]) -> int
     }
 
     //Get input while user don't type "."
-    memset(&send_buffer, 0, BUFFESIZE);
-    fgets(send_buffer, SEGMENTSIZE, stdin);
-    while (strncmp(send_buffer, ".", 1) != 0)
+    char receive_buffer[BUFFESIZE];
+    for (auto send_buffer = string{}; cin >> send_buffer; /* */)
     {
-        send_buffer[strlen(send_buffer) - 1] = '\0';//strip send_buffer from '\n'
-        strcat(send_buffer, "\r\n");
-        //*******************************************************************
+        if (send_buffer == ".") break; else send_buffer += "\r\n";
         //SEND
-        //*******************************************************************
-        if (0 > send(s, send_buffer, strlen(send_buffer), 0))
+        if (0 > send(s, send_buffer.c_str(), send_buffer.size(), 0))
         {
             printf("send failed\n");
             exit(1);
         }
-        n = 0;
-        while (1) 
+
+        for (int n = 0; true; /* */)
         {
             //*******************************************************************
             //RECEIVE
@@ -103,8 +98,6 @@ auto main(int argc, char *argv[]) -> int
             if (receive_buffer[n] != '\r') n++;   /*ignore CR's*/
         }
         cout << receive_buffer << endl;
-        memset(&send_buffer, 0, BUFFESIZE);
-        fgets(send_buffer, SEGMENTSIZE, stdin);
     }
 
     closesocket(s);
