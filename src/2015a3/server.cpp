@@ -151,5 +151,6 @@ void decryptor(char *_buffer, int _n, int _d)
         de_temp[j] = repeatsquare(build_temp[j], _d, _n);
         j++;
     }
+
     strcpy(_buffer, de_temp);
 }

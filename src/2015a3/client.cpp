@@ -176,18 +176,14 @@ void	wy_key_builder(Key *_key, char *_buffer)
     char sep[2] = " "; //separation is space
     char *word;
     int  wcount = 0;
-
     strcpy(bf, _buffer);
-
     for (word = strtok(bf, sep); word; word = strtok(NULL, sep))
     {
         wcount++;
-
         if (wcount == 2) // jump the first space"_".
         {
             sscanf(word, "%d", &(_key->n));
         }
-
         if (wcount == 3) // jump the first space"_".
         {
             sscanf(word, "%d", &(_key->e));
@@ -197,20 +193,18 @@ void	wy_key_builder(Key *_key, char *_buffer)
 /**
   * @brief  encrpt and save it into the buffer passed in.
   */
-void	wy_RSA_encryptor(Key *_key, char *_buffer)
+void wy_RSA_encryptor(Key *_key, char *_buffer)
 {
     int temp[BUFFESIZE];
     char Char_temp[BUFFESIZE];
     int i = 0;
     int j = 0;
-
     memset(temp, 0, BUFFESIZE);
     memset(Char_temp, 0, BUFFESIZE);
 
     while (*_buffer != 10)
     {
         temp[i] = repeatsquare(*_buffer, _key->e, _key->n);
-
         _buffer++;
         i++;
     }
