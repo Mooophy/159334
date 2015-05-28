@@ -7,7 +7,6 @@ using std::string;
 #include <iostream>
 using std::cout; using std::endl; using std::cin;
 
-
 #define WSVERS MAKEWORD(2,0)
 WSADATA wsadata;
 
@@ -23,7 +22,7 @@ int main(int argc, char *argv[])
     //********************************************************************
     sockaddr_in localaddr, remoteaddr;
 
-    SOCKET s, ns;
+    SOCKET ns;
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
     memset(&send_buffer, 0, BUFFESIZE);
     memset(&receive_buffer, 0, BUFFESIZE);
@@ -44,11 +43,8 @@ int main(int argc, char *argv[])
     //SOCKET
     //********************************************************************
 
-    //s = socket(PF_INET, SOCK_STREAM, 0);
-    //if (s < 0) printf("socket failed\n");
     as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
     if (sock.is_failed()) cout << "socket failed\n";
-
 
     localaddr.sin_family = AF_INET;
     if (argc == 2) localaddr.sin_port = htons((u_short)atoi(argv[1]));
@@ -76,8 +72,8 @@ int main(int argc, char *argv[])
         //********************************************************************
         //NEW SOCKET newsocket = accept
         //********************************************************************
-        ns = accept(sock.get(), (struct sockaddr *)(&remoteaddr), &addrlen);
-        if (ns < 0) break;
+        as3::Socket new_sock{ accept(sock.get(), (sockaddr*)(&remoteaddr), &addrlen) };
+        if ( new_sock.is_failed()) break;
         printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
         while (1) 
         {
@@ -87,7 +83,7 @@ int main(int argc, char *argv[])
                 //********************************************************************
                 //RECEIVE
                 //********************************************************************
-                bytes = recv(ns, &receive_buffer[n], 1, 0);
+                bytes = recv(new_sock.get(), &receive_buffer[n], 1, 0);
                 //********************************************************************
                 //PROCESS REQUEST
                 //********************************************************************
@@ -106,15 +102,13 @@ int main(int argc, char *argv[])
             //********************************************************************
             //SEND
             //********************************************************************
-            bytes = send(ns, send_buffer, strlen(send_buffer), 0);
+            bytes = send(new_sock.get(), send_buffer, strlen(send_buffer), 0);
             if (bytes < 0) break;
         }
         //********************************************************************
         //CLOSE SOCKET
         //********************************************************************
-        closesocket(ns);//close connecting socket
         printf("disconnected from %s\n", inet_ntoa(remoteaddr.sin_addr));
     }
-    //closesocket(s);//close listening socket
     return 0;
 }
