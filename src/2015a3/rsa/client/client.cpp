@@ -81,25 +81,23 @@ namespace as3
 
 auto main(int argc, char *argv[]) -> int
 {
+    as3::handle_user_input(argc);
+    auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
+    auto remoteaddr = as3::make_remote_address(argv);
+
+    //CREATE CLIENT'S SOCKET 
+    auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
+
+    //CONNECT
+    if (connect(sock.get(), (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0)
     {
-        as3::handle_user_input(argc);
-        auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
-        auto remoteaddr = as3::make_remote_address(argv);
+        cout << "connect failed\n";
+        exit(1);
+    }
 
-        //CREATE CLIENT'S SOCKET 
-        auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
-
-        //CONNECT
-        if (connect(sock.get(), (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0)
-        {
-            cout << "connect failed\n";
-            exit(1);
-        }
-
-        for (auto send_buffer = string{}; cin >> send_buffer && send_buffer != "."; cout << as3::receive(sock.get()) << endl)
-        {
-            as3::send(sock.get(), send_buffer + "\r\n");
-        } 
+    for (auto send_buffer = string{}; cin >> send_buffer && send_buffer != "."; cout << as3::receive(sock.get()) << endl)
+    {
+        as3::send(sock.get(), send_buffer + "\r\n");
     }
     return 0;
 }
