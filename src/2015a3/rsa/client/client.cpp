@@ -8,7 +8,6 @@ using std::cout; using std::endl; using std::cin;
 namespace rsa
 {
     const int WSVERS = MAKEWORD(2, 0);
-    const int BUFFESIZE = 200;
 
     auto make_remote_address(char* arr[]) -> struct sockaddr_in
     {
