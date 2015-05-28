@@ -7,6 +7,25 @@ using std::cout; using std::endl; using std::cin;
 
 namespace as3
 {
+    class Socket
+    {
+    public:
+        explicit Socket(SOCKET s) 
+            : socket_{ s }
+        {}
+        Socket(int address_family, int type, int protocol)
+            : socket_{ ::socket(address_family, type, protocol) }
+        {}
+
+        /*auto operator=(Socket && other) -> Socket& */
+
+        auto get() const ->  SOCKET { return socket_; }
+        auto is_failed() const -> bool { return socket_ < 0; }
+        ~Socket(){ ::closesocket(socket_); cout << "from class Socket : clearing socket\n"; }
+    private: 
+        const SOCKET socket_;
+    };
+
     const int WSVERS = MAKEWORD(2, 0);
 
     auto make_remote_address(char* arr[]) -> sockaddr_in
@@ -63,31 +82,32 @@ namespace as3
 
 auto main(int argc, char *argv[]) -> int
 {
-    as3::handle_user_input(argc);
-    auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
-    auto remoteaddr = as3::make_remote_address(argv);
-
-    //CREATE CLIENT'S SOCKET 
-    auto s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s < 0)
     {
-        cout << "socket failed\n";
-        exit(1);
-    }
+        as3::handle_user_input(argc);
+        auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
+        auto remoteaddr = as3::make_remote_address(argv);
 
-    //CONNECT
-    if (connect(s, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0) 
-    {
-        cout << "connect failed\n";
-        exit(1);
-    }
+        //CREATE CLIENT'S SOCKET 
+        auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
+        //auto s = socket(AF_INET, SOCK_STREAM, 0);
+        //if (s < 0)
+        //{
+        //    cout << "socket failed\n";
+        //    exit(1);
+        //}
 
-    for (auto send_buffer = string{}; cin >> send_buffer; cout << as3::receive(s) << endl)
-    {
-        if (send_buffer == ".") break; else send_buffer += "\r\n";
-        as3::send(s, send_buffer);
-    }
+        //CONNECT
+        if (connect(sock.get(), (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0)
+        {
+            cout << "connect failed\n";
+            exit(1);
+        }
 
-    closesocket(s);
+        for (auto send_buffer = string{}; cin >> send_buffer && send_buffer != "."; cout << as3::receive(sock.get()) << endl)
+        {
+            as3::send(sock.get(), send_buffer + "\r\n");
+        }
+    }
+    //closesocket(s);
     return 0;
 }
