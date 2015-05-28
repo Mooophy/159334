@@ -1,45 +1,22 @@
-//159.334 - Networks
-// SERVER updated 2013
-//This prototype can be compiled with gcc (or g++) in both Linux and Windows
-//To see the differences, just follow the ifdefs
-#if defined __unix__ || defined __APPLE__
-#include <unistd.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#elif defined _WIN32
-# include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock.h>
 #define WSVERS MAKEWORD(2,0)
 WSADATA wsadata;
-#endif
 
 #define BUFFESIZE 200
-//remember that the BUFFESIZE has to be at least big enough to receive the answer
 #define SEGMENTSIZE 198
 //segment size, i.e., BUFFESIZE - 2 bytes (for \r\n)
 
-//*******************************************************************
-//MAIN
-//*******************************************************************
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
 
     //********************************************************************
     // INITIALIZATION
     //********************************************************************
     struct sockaddr_in localaddr, remoteaddr;
 
-#if defined __unix__ || defined __APPLE__
-    int s, ns;
-#elif defined _WIN32
     SOCKET s, ns;
-#endif
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
     memset(&send_buffer, 0, BUFFESIZE);
     memset(&receive_buffer, 0, BUFFESIZE);
@@ -48,9 +25,6 @@ int main(int argc, char *argv[]) {
     memset(&localaddr, 0, sizeof(localaddr));//clean up the structure
     memset(&remoteaddr, 0, sizeof(remoteaddr));//clean up the structure
 
-#if defined __unix__ || defined __APPLE__
-    //nothing to do here
-#elif defined _WIN32
     //********************************************************************
     // WSSTARTUP
     //********************************************************************
@@ -58,7 +32,6 @@ int main(int argc, char *argv[]) {
         WSACleanup();
         printf("WSAStartup failed\n");
     }
-#endif
     //********************************************************************
     //SOCKET
     //********************************************************************
@@ -86,21 +59,20 @@ int main(int argc, char *argv[]) {
     //********************************************************************
     //INFINITE LOOP
     //********************************************************************
-    while (1) {
+    while (1) 
+    {
         addrlen = sizeof(remoteaddr);
         //********************************************************************
         //NEW SOCKET newsocket = accept
         //********************************************************************
-#if defined __unix__ || defined __APPLE__
-        ns = accept(s, (struct sockaddr *)(&remoteaddr), (socklen_t*)&addrlen);
-#elif defined _WIN32
         ns = accept(s, (struct sockaddr *)(&remoteaddr), &addrlen);
-#endif
         if (ns < 0) break;
         printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
-        while (1) {
+        while (1) 
+        {
             n = 0;
-            while (1) {
+            while (1) 
+            {
                 //********************************************************************
                 //RECEIVE
                 //********************************************************************
@@ -129,17 +101,9 @@ int main(int argc, char *argv[]) {
         //********************************************************************
         //CLOSE SOCKET
         //********************************************************************
-#if defined __unix__ || defined __APPLE__
-        close(ns);//close connecting socket
-#elif defined _WIN32
         closesocket(ns);//close connecting socket
-#endif
         printf("disconnected from %s\n", inet_ntoa(remoteaddr.sin_addr));
     }
-#if defined __unix__ || defined __APPLE__
-    close(s);//close listening socket
-#elif defined _WIN32
     closesocket(s);//close listening socket
-#endif
     return 0;
 }
