@@ -27,18 +27,6 @@ namespace as3
         }
     }
 
-    auto setup_win_sock_api(WORD version_required) -> WSADATA
-    {
-        WSADATA wsadata;
-        if (WSAStartup(WSVERS, &wsadata) != 0)
-        {
-            WSACleanup();
-            cout << "WSAStartup failed\n";
-            exit(1);
-        }
-        return wsadata;
-    }
-
     auto connect(as3::Socket const& s, sockaddr_in const& remote_addr) -> void
     {
         if (0 != ::connect(s.get(), (sockaddr*)&remote_addr, sizeof(remote_addr)))
@@ -74,7 +62,7 @@ auto main(int argc, char *argv[]) -> int
     as3::handle_user_input(argc);
     
     //init
-    auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
+    as3::setup_win_sock_api(as3::WSVERS);
     auto remote_addr = as3::make_remote_address(argv);
     as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
     

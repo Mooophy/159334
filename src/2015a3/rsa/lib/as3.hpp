@@ -32,4 +32,16 @@ namespace as3
     private:
         const SOCKET socket_;
     };
+
+    auto inline setup_win_sock_api(WORD version_required) -> WSADATA
+    {
+        WSADATA wsadata;
+        if (WSAStartup(WSVERS, &wsadata) != 0)
+        {
+            WSACleanup();
+            cout << "WSAStartup failed\n";
+            exit(1);
+        }
+        return wsadata;
+    }
 }//namespace

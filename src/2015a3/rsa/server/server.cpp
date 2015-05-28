@@ -7,14 +7,14 @@ using std::string;
 #include <iostream>
 using std::cout; using std::endl; using std::cin;
 
-#define WSVERS MAKEWORD(2,0)
+//#define WSVERS MAKEWORD(2,0)
 WSADATA wsadata;
 
 #define BUFFESIZE 200
 #define SEGMENTSIZE 198
 //segment size, i.e., BUFFESIZE - 2 bytes (for \r\n)
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
 
     //********************************************************************
@@ -31,14 +31,7 @@ int main(int argc, char *argv[])
     memset(&localaddr, 0, sizeof(localaddr));//clean up the structure
     memset(&remoteaddr, 0, sizeof(remoteaddr));//clean up the structure
 
-    //********************************************************************
-    // WSSTARTUP
-    //********************************************************************
-    if (WSAStartup(WSVERS, &wsadata) != 0) 
-    {
-        WSACleanup();
-        printf("WSAStartup failed\n");
-    }
+    as3::setup_win_sock_api(as3::WSVERS);
     //********************************************************************
     //SOCKET
     //********************************************************************
@@ -66,19 +59,19 @@ int main(int argc, char *argv[])
     //********************************************************************
     //INFINITE LOOP
     //********************************************************************
-    while (1) 
+    while (1)
     {
         addrlen = sizeof(remoteaddr);
         //********************************************************************
         //NEW SOCKET newsocket = accept
         //********************************************************************
         as3::Socket new_sock{ accept(sock.get(), (sockaddr*)(&remoteaddr), &addrlen) };
-        if ( new_sock.is_failed()) break;
+        if (new_sock.is_failed()) break;
         printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
-        while (1) 
+        while (1)
         {
             n = 0;
-            while (1) 
+            while (1)
             {
                 //********************************************************************
                 //RECEIVE
@@ -105,10 +98,7 @@ int main(int argc, char *argv[])
             bytes = send(new_sock.get(), send_buffer, strlen(send_buffer), 0);
             if (bytes < 0) break;
         }
-        //********************************************************************
-        //CLOSE SOCKET
-        //********************************************************************
-        printf("disconnected from %s\n", inet_ntoa(remoteaddr.sin_addr));
+        cout << "disconnected from " << inet_ntoa(remoteaddr.sin_addr) << endl;
     }
     return 0;
 }
