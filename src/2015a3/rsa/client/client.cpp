@@ -5,7 +5,7 @@ using std::string;
 #include <iostream>
 using std::cout; using std::endl; using std::cin;
 
-namespace rsa
+namespace as3
 {
     const int WSVERS = MAKEWORD(2, 0);
 
@@ -52,14 +52,20 @@ namespace rsa
         }
         return received;
     }
+
+    auto send(SOCKET sock, string const& send_buffer) -> void
+    {
+        auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
+        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
+    }
 }//namespace rsa
 
 
 auto main(int argc, char *argv[]) -> int
 {
-    rsa::handle_user_input(argc);
-    auto wsa_data = rsa::setup_win_sock_api(rsa::WSVERS);
-    auto remoteaddr = rsa::make_remote_address(argv);
+    as3::handle_user_input(argc);
+    auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
+    auto remoteaddr = as3::make_remote_address(argv);
 
     //CREATE CLIENT'S SOCKET 
     auto s = socket(AF_INET, SOCK_STREAM, 0);
@@ -76,16 +82,10 @@ auto main(int argc, char *argv[]) -> int
         exit(1);
     }
 
-    for (auto send_buffer = string{}; cin >> send_buffer; /* */)
+    for (auto send_buffer = string{}; cin >> send_buffer; cout << as3::receive(s) << endl)
     {
         if (send_buffer == ".") break; else send_buffer += "\r\n";
-
-        //SEND
-        auto bytes_sent = send(s, send_buffer.c_str(), send_buffer.size(), 0);
-        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
-
-        //receive
-        cout << rsa::receive(s) << endl;
+        as3::send(s, send_buffer);
     }
 
     closesocket(s);
