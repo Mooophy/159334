@@ -23,6 +23,10 @@ namespace as3
         auto is_failed() const -> bool { return socket_ < 0; }
         ~Socket(){ ::closesocket(socket_); }
 
+        Socket(Socket const&) = delete;
+        Socket(Socket &&) = delete;
+        Socket& operator=(Socket const&) = delete;
+        Socket& operator=(Socket &&) = delete;
     private:
         const SOCKET socket_;
     };
@@ -95,7 +99,7 @@ auto main(int argc, char *argv[]) -> int
     //init
     auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
     auto remote_addr = as3::make_remote_address(argv);
-    auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
+    as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
     
     //connect
     as3::connect(sock, remote_addr);
