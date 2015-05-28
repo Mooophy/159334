@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     //********************************************************************
     // INITIALIZATION
     //********************************************************************
-    struct sockaddr_in localaddr, remoteaddr;
+    sockaddr_in localaddr, remoteaddr;
 
     SOCKET s, ns;
     char send_buffer[BUFFESIZE], receive_buffer[BUFFESIZE];
