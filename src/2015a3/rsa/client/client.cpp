@@ -1,8 +1,5 @@
 #include <windows.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <winsock.h>
-
 #include <string>
 using std::string;
 #include <iostream>
@@ -82,11 +79,8 @@ auto main(int argc, char *argv[]) -> int
         if (send_buffer == ".") break; else send_buffer += "\r\n";
 
         //SEND
-        if (0 > send(s, send_buffer.c_str(), send_buffer.size(), 0))
-        {
-            cout <<"send failed\n";
-            exit(1);
-        }
+        auto bytes_sent = send(s, send_buffer.c_str(), send_buffer.size(), 0);
+        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
 
         //receive
         cout << receive(s) << endl;
