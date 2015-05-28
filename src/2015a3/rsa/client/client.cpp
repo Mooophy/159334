@@ -58,9 +58,9 @@ namespace as3
         return wsadata;
     }
 
-    auto connect_server(as3::Socket const& s, sockaddr const* server_addr, int name_len) -> void
+    auto connect(as3::Socket const& s, sockaddr_in const& remote_addr) -> void
     {
-        if (0 != ::connect(s.get(), server_addr, name_len))
+        if (0 != ::connect(s.get(), (sockaddr*)&remote_addr, sizeof(remote_addr)))
         {
             cout << "connect failed\n";
             exit(1);
@@ -89,15 +89,20 @@ namespace as3
 
 auto main(int argc, char *argv[]) -> int
 {
+    //handle arugments
     as3::handle_user_input(argc);
+    
+    //init
     auto wsa_data = as3::setup_win_sock_api(as3::WSVERS);
-    auto remoteaddr = as3::make_remote_address(argv);
+    auto remote_addr = as3::make_remote_address(argv);
     auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
-    as3::connect_server(sock, (struct sockaddr *)&remoteaddr, sizeof(remoteaddr));// refactor : should pass remote addr into function
-
-    for (auto send_buffer = string{}; cin >> send_buffer && send_buffer != "."; cout << as3::receive(sock.get()) << endl)
+    
+    //connect
+    as3::connect(sock, remote_addr);
+    for (auto input = string{}; cin >> input && input != "."; /* */)
     {
-        as3::send(sock.get(), send_buffer + "\r\n");
+        as3::send(sock.get(), input + "\r\n");
+        cout << as3::receive(sock.get()) << endl;
     }
     return 0;
 }
