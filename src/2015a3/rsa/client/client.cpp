@@ -18,7 +18,6 @@ auto make_remote_address(char* arr[]) -> struct sockaddr_in
     address.sin_addr.s_addr = inet_addr(arr[1]);    //IP address
     address.sin_port = htons((u_short)atoi(arr[2]));//Port number
     address.sin_family = AF_INET;
-
     return address;
 }
 
@@ -41,6 +40,19 @@ auto setup_win_sock_api(WORD version_required) -> WSADATA
         exit(1);
     }
     return wsadata;
+}
+
+//return the string received
+auto receive(SOCKET s) -> string
+{
+    auto received = string();
+    //receive char by char, end on an LF, ignore CR's
+    for (auto ch = char(0); true; /* */)
+    {
+        if (0 >= recv(s, &ch, 1, 0)) { cout << "recv failed\n"; exit(1); }
+        if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
+    }
+    return received;
 }
 
 
@@ -76,23 +88,8 @@ auto main(int argc, char *argv[]) -> int
             exit(1);
         }
 
-        auto receive_buffer = string(BUFFESIZE, char(0));
-        for (auto curr = receive_buffer.begin(); true; )
-        {
-            //RECEIVE
-            if (0 >= recv(s, &*curr, 1, 0))
-            {
-                cout << "recv failed\n";
-                exit(1);
-            }
-            if (*curr == '\n') 
-            {  /*end on a LF*/
-                receive_buffer = string(receive_buffer.begin(), curr);
-                break;
-            }
-            if (*curr != '\r') ++curr;   /*ignore CR's*/
-        }
-        cout << receive_buffer << endl;
+        //receive
+        cout << receive(s) << endl;
     }
 
     closesocket(s);
