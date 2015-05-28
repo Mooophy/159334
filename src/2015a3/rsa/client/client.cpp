@@ -36,18 +36,6 @@ namespace as3
         }
     }
 
-    //return the string received
-    auto receive(SOCKET s) -> string
-    {
-        auto received = string();
-        for (auto ch = char(0); true; /* */)//receive char by char, end on an LF, ignore CR's
-        {
-            if (0 >= recv(s, &ch, 1, 0)) { cout << "recv failed\n"; exit(1); }
-            if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
-        }
-        return received;
-    }
-
     auto send(SOCKET sock, string const& send_buffer) -> void
     {
         auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
