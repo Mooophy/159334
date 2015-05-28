@@ -1,4 +1,3 @@
-#include <windows.h>
 #include <winsock.h>
 #include <string>
 using std::string;
@@ -88,7 +87,7 @@ namespace as3
         auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
         if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
     }
-}//namespace rsa
+}//namespace as3
 
 
 auto main(int argc, char *argv[]) -> int
