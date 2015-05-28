@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock.h>
+#include "../lib/as3.hpp"
+#include <string>
+using std::string;
+#include <iostream>
+using std::cout; using std::endl; using std::cin;
+
+
 #define WSVERS MAKEWORD(2,0)
 WSADATA wsadata;
 
@@ -28,7 +35,8 @@ int main(int argc, char *argv[])
     //********************************************************************
     // WSSTARTUP
     //********************************************************************
-    if (WSAStartup(WSVERS, &wsadata) != 0) {
+    if (WSAStartup(WSVERS, &wsadata) != 0) 
+    {
         WSACleanup();
         printf("WSAStartup failed\n");
     }
@@ -36,8 +44,11 @@ int main(int argc, char *argv[])
     //SOCKET
     //********************************************************************
 
-    s = socket(PF_INET, SOCK_STREAM, 0);
-    if (s < 0) printf("socket failed\n");
+    //s = socket(PF_INET, SOCK_STREAM, 0);
+    //if (s < 0) printf("socket failed\n");
+    as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
+    if (sock.is_failed()) cout << "socket failed\n";
+
 
     localaddr.sin_family = AF_INET;
     if (argc == 2) localaddr.sin_port = htons((u_short)atoi(argv[1]));
@@ -46,7 +57,7 @@ int main(int argc, char *argv[])
     //********************************************************************
     //BIND
     //********************************************************************
-    if (bind(s, (struct sockaddr *)(&localaddr), sizeof(localaddr)) != 0)
+    if (bind(sock.get(), (struct sockaddr *)(&localaddr), sizeof(localaddr)) != 0)
     {
         printf("Bind failed!\n");
         exit(0);
@@ -54,7 +65,7 @@ int main(int argc, char *argv[])
     //********************************************************************
     //LISTEN
     //********************************************************************
-    listen(s, 5);
+    listen(sock.get(), 5);
 
     //********************************************************************
     //INFINITE LOOP
@@ -65,7 +76,7 @@ int main(int argc, char *argv[])
         //********************************************************************
         //NEW SOCKET newsocket = accept
         //********************************************************************
-        ns = accept(s, (struct sockaddr *)(&remoteaddr), &addrlen);
+        ns = accept(sock.get(), (struct sockaddr *)(&remoteaddr), &addrlen);
         if (ns < 0) break;
         printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
         while (1) 
@@ -104,6 +115,6 @@ int main(int argc, char *argv[])
         closesocket(ns);//close connecting socket
         printf("disconnected from %s\n", inet_ntoa(remoteaddr.sin_addr));
     }
-    closesocket(s);//close listening socket
+    //closesocket(s);//close listening socket
     return 0;
 }
