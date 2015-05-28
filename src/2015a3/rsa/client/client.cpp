@@ -10,19 +10,18 @@ namespace as3
     class Socket
     {
     public:
-        explicit Socket(SOCKET s) 
+        explicit Socket(SOCKET s)
             : socket_{ s }
         {}
         Socket(int address_family, int type, int protocol)
             : socket_{ ::socket(address_family, type, protocol) }
         {}
 
-        /*auto operator=(Socket && other) -> Socket& */
-
         auto get() const ->  SOCKET { return socket_; }
         auto is_failed() const -> bool { return socket_ < 0; }
-        ~Socket(){ ::closesocket(socket_); cout << "from class Socket : clearing socket\n"; }
-    private: 
+        ~Socket(){ ::closesocket(socket_); cout << "clearing socket\n"; }
+
+    private:
         const SOCKET socket_;
     };
 
@@ -89,12 +88,6 @@ auto main(int argc, char *argv[]) -> int
 
         //CREATE CLIENT'S SOCKET 
         auto sock = as3::Socket{ AF_INET, SOCK_STREAM, 0 };
-        //auto s = socket(AF_INET, SOCK_STREAM, 0);
-        //if (s < 0)
-        //{
-        //    cout << "socket failed\n";
-        //    exit(1);
-        //}
 
         //CONNECT
         if (connect(sock.get(), (struct sockaddr *)&remoteaddr, sizeof(remoteaddr)) != 0)
@@ -106,8 +99,7 @@ auto main(int argc, char *argv[]) -> int
         for (auto send_buffer = string{}; cin >> send_buffer && send_buffer != "."; cout << as3::receive(sock.get()) << endl)
         {
             as3::send(sock.get(), send_buffer + "\r\n");
-        }
+        } 
     }
-    //closesocket(s);
     return 0;
 }
