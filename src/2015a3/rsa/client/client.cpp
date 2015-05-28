@@ -7,6 +7,8 @@ using std::cout; using std::endl; using std::cin;
 
 namespace as3
 {
+    const int WSVERS = MAKEWORD(2, 0);
+
     class Socket
     {
     public:
@@ -19,13 +21,11 @@ namespace as3
 
         auto get() const ->  SOCKET { return socket_; }
         auto is_failed() const -> bool { return socket_ < 0; }
-        ~Socket(){ ::closesocket(socket_); cout << "clearing socket\n"; }
+        ~Socket(){ ::closesocket(socket_); }
 
     private:
         const SOCKET socket_;
     };
-
-    const int WSVERS = MAKEWORD(2, 0);
 
     auto make_remote_address(char* arr[]) -> sockaddr_in
     {
@@ -104,5 +104,6 @@ auto main(int argc, char *argv[]) -> int
         as3::send(sock.get(), input + "\r\n");
         cout << as3::receive(sock.get()) << endl;
     }
+
     return 0;
 }
