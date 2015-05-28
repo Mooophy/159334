@@ -9,7 +9,7 @@ namespace rsa
 {
     const int WSVERS = MAKEWORD(2, 0);
 
-    auto make_remote_address(char* arr[]) -> struct sockaddr_in
+    auto make_remote_address(char* arr[]) -> sockaddr_in
     {
         struct sockaddr_in address;
         memset(&address, 0, sizeof(address));
