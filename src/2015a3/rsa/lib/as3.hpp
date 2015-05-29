@@ -42,7 +42,6 @@ namespace as3
         if (WSAStartup(WSVERS, &wsadata) != 0)
         {
             WSACleanup();
-            //cout << "WSAStartup failed\n";
             println("WSAStartup failed");
             exit(1);
         }
