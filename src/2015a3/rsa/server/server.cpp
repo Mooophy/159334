@@ -41,12 +41,6 @@ int main(int argc, char *argv[])
     }
 
     if (as3::bind(sock, local_addr) == false) return 1;
-    //if (bind(sock.get(), (struct sockaddr *)(&local_addr), sizeof(local_addr)) != 0)
-    //{
-    //    as3::println("Bind failed!");
-    //    exit(0);
-    //}
-
     auto remote_addr = as3::make_address();
     for (listen(sock.get(), 5); true; as3::println("disconnected from " + string(inet_ntoa(remote_addr.sin_addr))))
     {
