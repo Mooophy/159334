@@ -1,9 +1,8 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <winsock.h>
 #include "../lib/as3.hpp"
 #include <string>
-using std::string;
+using std::string; using std::to_string;
 #include <iostream>
 using std::cout; using std::endl; using std::cin;
 
@@ -42,7 +41,7 @@ int main(int argc, char *argv[])
     //********************************************************************
     if (bind(sock.get(), (struct sockaddr *)(&localaddr), sizeof(localaddr)) != 0)
     {
-        printf("Bind failed!\n");
+        as3::println("Bind failed!");
         exit(0);
     }
     //********************************************************************
@@ -54,15 +53,15 @@ int main(int argc, char *argv[])
         addrlen = sizeof(remoteaddr);
         as3::Socket new_sock{ ::accept(sock.get(), (sockaddr*)(&remoteaddr), &addrlen) };
         if (new_sock.is_failed()) break;
-        printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
-        for (auto receive = as3::Receive{}; receive.is_normal();)
+        as3::println("accepted a connection from client IP " + string(inet_ntoa(remoteaddr.sin_addr)) + " port " + to_string(ntohs(localaddr.sin_port)));
+        for (auto receive = as3::Receive{}; receive.is_normal(); )
         {
             auto message_reveived = receive(new_sock);
-            cout << "The client is sending:\n" << message_reveived << endl;
-            auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + std::to_string(message_reveived.size()) + " bytes in total\r\n";
+            as3::println("The client is sending:\n" + message_reveived);
+            auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + to_string(message_reveived.size()) + " bytes in total\r\n";
             as3::send(new_sock.get(), feed_back);
         }
-        cout << "disconnected from " << inet_ntoa(remoteaddr.sin_addr) << endl;
+        as3::println("disconnected from " + string(inet_ntoa(remoteaddr.sin_addr)));
     }
     return 0;
 }
