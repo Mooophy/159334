@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
     if (as3::bind(sock, local_addr) == false) return 1;
     auto remote_addr = as3::make_address();
 
-
     auto key_list = as3::rsa::make_rsa_key_list();
     for (listen(sock.get(), 5); true; as3::println("disconnected from " + string(inet_ntoa(remote_addr.sin_addr))))
     {
