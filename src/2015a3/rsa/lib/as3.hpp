@@ -99,8 +99,14 @@ namespace as3
         struct BinKey
         {
             int const n, e_or_d;
-            auto operator()(int m) const -> int{ return repeat_square(m, e_or_d, n); }
-            auto to_str() const -> string{ return{ char(n), char(e_or_d) }; }
+            auto operator()(int m) const -> int
+            { 
+                return repeat_square(m, e_or_d, n); 
+            }
+            auto to_str() const -> string
+            { 
+                return{ char(n), char(e_or_d) }; 
+            }
         };
 
         class RsaKeyList
@@ -135,5 +141,10 @@ namespace as3
             vector<TriKey> const list_;
             mutable vector<TriKey>::const_iterator curr_;
         };
+
+        auto read_char_as_int(char ch) -> int
+        {
+            return ch < 0 ? 256 + ch : ch;
+        }
     }
 }//namespace

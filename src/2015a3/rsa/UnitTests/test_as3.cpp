@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "../lib/as3.hpp"
+#include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -59,6 +60,40 @@ namespace UnitTests
             auto key_list = as3::rsa::RsaKeyList(keys.begin(), keys.end());
 
             Assert::AreEqual(3u, key_list.data().size());
+        }
+
+        TEST_METHOD(BinKey1)
+        {
+            auto bk = as3::rsa::BinKey{ 143, 7 };
+            auto expect = std::string{ char(143), char{ 7 } };
+            auto actual = bk.to_str();
+            Assert::AreEqual(expect, actual);
+            Assert::AreEqual(143 - 256, (int)actual[0]);
+        }
+
+        TEST_METHOD(BinKey2)
+        {
+            auto bk = as3::rsa::BinKey{ 187, 27 };
+            auto expect = std::string{ char(187), char(27) };
+            auto actual = bk.to_str();
+            Assert::AreEqual(expect, actual);
+            Assert::AreEqual(187 - 256, (int)actual[0]);
+        }
+
+        TEST_METHOD(BinKey3)
+        {
+            auto bk = as3::rsa::BinKey{ 209, 17 };
+            auto expect = std::string{ char(209), char(17) };
+            auto actual = bk.to_str();
+            Assert::AreEqual(expect, actual);
+            Assert::AreEqual(209 - 256, (int)actual[0]);
+        }
+
+        TEST_METHOD(read_char_as_int)
+        {
+            Assert::AreEqual(209, as3::rsa::read_char_as_int(char(209)));
+            Assert::AreEqual(187, as3::rsa::read_char_as_int(char(187)));
+            Assert::AreEqual(143, as3::rsa::read_char_as_int(char(143)));
         }
 
     };
