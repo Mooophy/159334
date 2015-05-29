@@ -12,16 +12,50 @@ namespace UnitTests
 
         TEST_METHOD(key_ctor)
         {
-            auto rkey = as3::rsa::RsaKey{ 1, 2, 3 };
-            Assert::AreEqual((char)1, rkey.n);
-            Assert::AreEqual((char)2, rkey.e);
-            Assert::AreEqual((char)3, rkey.d);
+            auto tkey = as3::rsa::TriKey{ 1, 2, 3 };
+            Assert::AreEqual(1, tkey.n);
+            Assert::AreEqual(2, tkey.e);
+            Assert::AreEqual(3, tkey.d);
         }
+
+        TEST_METHOD(repeat_square_set1)
+        {
+            auto key = as3::rsa::TriKey{ 143, 7, 103 };
+            for (int i = 0; i != 127; ++i)
+            {
+                auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                auto de = as3::rsa::repeat_square(en, key.d, key.n);
+                Assert::AreEqual(i, de);
+            }
+        }
+
+        TEST_METHOD(repeat_square_set2)
+        {
+            auto key = as3::rsa::TriKey{ 187, 27, 83 };
+            for (int i = 0; i != 127; ++i)
+            {
+                auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                auto de = as3::rsa::repeat_square(en, key.d, key.n);
+                Assert::AreEqual(i, de);
+            }
+        }
+
+        TEST_METHOD(repeat_square_set3)
+        {
+            auto key = as3::rsa::TriKey{ 209, 17, 53 };
+            for (int i = 0; i != 127; ++i)
+            {
+                auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                auto de = as3::rsa::repeat_square(en, key.d, key.n);
+                Assert::AreEqual(i, de);
+            }
+        }
+
 
         TEST_METHOD(RsaKeyList)
         {
-            using RK = as3::rsa::RsaKey;
-            auto keys = { RK{ 143, 7, 103 }, RK{ 187, 27, 83 }, RK{ 209, 17, 53 } };
+            using TK = as3::rsa::TriKey;
+            auto keys = { TK{ 143, 7, 103 }, TK{ 187, 27, 83 }, TK{ 209, 17, 53 } };
             auto key_list = as3::rsa::RsaKeyList(keys.begin(), keys.end());
 
             Assert::AreEqual(3u, key_list.data().size());

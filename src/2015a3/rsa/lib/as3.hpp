@@ -91,20 +91,16 @@ namespace as3
             return y; 
         }
 
-        struct RsaKey
+        struct TriKey
         {
-            char const n, e, d;
+            int const n, e, d;
         };
 
-        struct PubKey
+        struct BinKey
         {
-            char const n, e;
-            auto operator()(char const m) const -> char{ return repeat_square(m, e, n); }
-        };
-        struct PrvKey
-        {
-            char const n, d;
-            auto operator()(char const m) const -> char{ return repeat_square(m, d, n); }
+            int const n, e_or_d;
+            auto operator()(int m) const -> int{ return repeat_square(m, e_or_d, n); }
+            auto to_str() const -> string{ return{ char(n), char(e_or_d) }; }
         };
 
         class RsaKeyList
@@ -120,25 +116,24 @@ namespace as3
                 if (++curr_ == list_.cend()) curr_ = list_.cbegin();
             };
 
-            auto current_public_key() const -> PrvKey
+            auto current_public_key() const -> BinKey
             {
                 return{ curr_->n, curr_->e };
             }
 
-            auto current_private_key() const -> PubKey
+            auto current_private_key() const -> BinKey
             {
                 return{ curr_->n, curr_->d };
             }
 
-            auto data() const -> vector<RsaKey> const&
+            auto data() const -> vector<TriKey> const&
             {
                 return list_;
             }
 
         private:
-            vector<RsaKey> const list_;
-            mutable vector<RsaKey>::const_iterator curr_;
+            vector<TriKey> const list_;
+            mutable vector<TriKey>::const_iterator curr_;
         };
     }
-
 }//namespace
