@@ -24,6 +24,15 @@ namespace as3
         }
         return true;
     }
+
+    namespace rsa
+    {
+        auto make_rsa_key_list() -> as3::rsa::RsaKeyList
+        {
+            auto keys = { TriKey{ 143, 7, 103 }, TriKey{ 187, 27, 83 }, TriKey{ 209, 17, 53 } };
+            return RsaKeyList(keys.begin(), keys.end());
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -42,6 +51,9 @@ int main(int argc, char *argv[])
 
     if (as3::bind(sock, local_addr) == false) return 1;
     auto remote_addr = as3::make_address();
+
+
+    auto key_list = as3::rsa::make_rsa_key_list();
     for (listen(sock.get(), 5); true; as3::println("disconnected from " + string(inet_ntoa(remote_addr.sin_addr))))
     {
         int addrlen = sizeof(remote_addr);
@@ -49,11 +61,12 @@ int main(int argc, char *argv[])
         if (new_sock.is_failed()) break;
         as3::println("accepted connection from IP " + string(inet_ntoa(remote_addr.sin_addr)) + " port " + to_string(ntohs(remote_addr.sin_port)));
         
+        as3::send(new_sock.get(), string("pk=") + key_list.current_public_key().to_str() + "\r\n");
         for (auto receive = as3::Receive{};;)
         {
             auto message_reveived = receive(new_sock);
             if (!receive.is_normal()) break;
-            as3::println("The client is sending:\n" + message_reveived);
+            as3::println("The client is sending:\n'" + message_reveived + "'");
             
             auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + to_string(message_reveived.size()) + " bytes in total\r\n";
             as3::send(new_sock.get(), feed_back);

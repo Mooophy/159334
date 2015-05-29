@@ -49,11 +49,17 @@ auto main(int argc, char *argv[]) -> int
     as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
     
     as3::connect(sock, remote_addr);
+    auto receive = as3::Receive{};
+    auto pk_msg = receive(sock);
+    auto n = as3::rsa::read_char_as_int(pk_msg[3]);
+    auto e = as3::rsa::read_char_as_int(pk_msg[4]);
+    as3::println("public key : ") << n << " " << e << endl;
+    auto pub_key = as3::rsa::BinKey{ n, e };
+
     for (auto input = string{}; cin >> input && input != "."; /* */)
     {
+        for (auto& ch : input) ch = pub_key(ch);
         as3::send(sock.get(), input + "\r\n");
-
-        auto receive = as3::Receive{};
         as3::println(receive(sock));
     }
 
