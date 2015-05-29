@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         if (new_sock.is_failed()) break;
         as3::println("accepted connection from IP " + string(inet_ntoa(remote_addr.sin_addr)) + " port " + to_string(ntohs(remote_addr.sin_port)));
         
-        for (auto receive = as3::Receive{}; receive.is_normal(); )
+        for (auto receive = as3::Receive{};;)
         {
             auto message_reveived = receive(new_sock);
             if (!receive.is_normal()) break;
