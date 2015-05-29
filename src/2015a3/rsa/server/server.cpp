@@ -62,13 +62,16 @@ int main(int argc, char *argv[])
         as3::println("accepted connection from IP " + string(inet_ntoa(remote_addr.sin_addr)) + " port " + to_string(ntohs(remote_addr.sin_port)));
         
         as3::send(new_sock.get(), string("pk=") + key_list.current_public_key().to_str() + "\r\n");
+        auto prv_key = key_list.current_private_key();
         for (auto receive = as3::Receive{};;)
         {
-            auto message_reveived = receive(new_sock);
+            auto msg_en = receive(new_sock);
             if (!receive.is_normal()) break;
-            as3::println("The client is sending:\n'" + message_reveived + "'");
+            as3::println("The original was:\n'" + msg_en + "'");
+            //auto msg_de = msg_en;
+            //for (auto& ch : msg_de) ch = 
             
-            auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + to_string(message_reveived.size()) + " bytes in total\r\n";
+            auto feed_back = "<<< SERVER SAYS:The client typed '" + msg_en + "' -- " + to_string(msg_en.size()) + " bytes in total\r\n";
             as3::send(new_sock.get(), feed_back);
         }
     }
