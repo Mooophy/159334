@@ -4,11 +4,14 @@
 #include <string>
 using std::string;
 #include <iostream>
-using std::cout; using std::endl; using std::cin;
+using std::cout; using std::endl; using std::cin; using std::ostream;
 
 
 namespace as3
 {
+    template<typename Printable>
+    auto println(Printable const& printable) -> ostream&{ return cout << printable << endl; }
+
     const int WSVERS = MAKEWORD(2, 0);
 
     class Socket
@@ -39,27 +42,41 @@ namespace as3
         if (WSAStartup(WSVERS, &wsadata) != 0)
         {
             WSACleanup();
-            cout << "WSAStartup failed\n";
+            //cout << "WSAStartup failed\n";
+            println("WSAStartup failed");
             exit(1);
         }
         return wsadata;
     }
 
-    //return the string received
-    auto receive(SOCKET s) -> string
+    class Receive
     {
-        auto received = string();
-        for (auto ch = char(0); true; /* */) //receive char by char, end on an LF, ignore CR's
+    public:
+        Receive() : is_normal_{ true }{}
+        auto operator()(Socket const& sock) -> string
         {
-            if (0 >= recv(s, &ch, 1, 0)) { cout << "recv failed\n"; exit(1); }
-            if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
+            auto received = string();
+            for (auto ch = char(0); true; /* */) //receive char by char, end on an LF, ignore CR's
+            {
+                if (0 >= recv(sock.get(), &ch, 1, 0)) 
+                { 
+                    is_normal_ = false;
+                    println("recv failed"); 
+                    break;
+                }
+                if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
+            }
+            return received;
         }
-        return received;
-    }
+        auto is_normal() const -> bool { return is_normal_; }
+    private:
+        bool is_normal_;
+    };
 
     auto send(SOCKET sock, string const& send_buffer) -> void
     {
         auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
-        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
+        if (bytes_sent < 0) { println( "send failed" ); exit(1); }
     }
+
 }//namespace

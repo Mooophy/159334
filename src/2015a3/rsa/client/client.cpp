@@ -22,7 +22,8 @@ namespace as3
     {
         if (arguments_count != 3)
         {
-            cout << "USAGE: client IP-address port" << endl;
+            //cout << "USAGE: client IP-address port" << endl;
+            as3::println("USAGE: client IP-address port");
             exit(1);
         }
     }
@@ -31,7 +32,8 @@ namespace as3
     {
         if (0 != ::connect(s.get(), (sockaddr*)&remote_addr, sizeof(remote_addr)))
         {
-            cout << "connect failed\n";
+            //cout << "connect failed\n";
+            as3::println("connect failed");
             exit(1);
         }
     }
@@ -40,20 +42,19 @@ namespace as3
 
 auto main(int argc, char *argv[]) -> int
 {
-    //handle arugments
     as3::handle_user_input(argc);
     
-    //init
     as3::setup_win_sock_api(as3::WSVERS);
     auto remote_addr = as3::make_remote_address(argv);
     as3::Socket sock{ AF_INET, SOCK_STREAM, 0 };
     
-    //connect
     as3::connect(sock, remote_addr);
     for (auto input = string{}; cin >> input && input != "."; /* */)
     {
         as3::send(sock.get(), input + "\r\n");
-        cout << as3::receive(sock.get()) << endl;
+
+        auto receive = as3::Receive{};
+        as3::println(receive(sock));
     }
 
     return 0;

@@ -9,7 +9,6 @@ using std::cout; using std::endl; using std::cin;
 
 #define BUFFESIZE 200
 #define SEGMENTSIZE 198
-//segment size, i.e., BUFFESIZE - 2 bytes (for \r\n)
 
 int main(int argc, char *argv[])
 {
@@ -50,24 +49,17 @@ int main(int argc, char *argv[])
     //LISTEN
     //********************************************************************
     listen(sock.get(), 5);
-
-    //********************************************************************
-    //INFINITE LOOP
-    //********************************************************************
     while (1)
     {
         addrlen = sizeof(remoteaddr);
         as3::Socket new_sock{ ::accept(sock.get(), (sockaddr*)(&remoteaddr), &addrlen) };
         if (new_sock.is_failed()) break;
         printf("accepted a connection from client IP %s port %d \n", inet_ntoa(remoteaddr.sin_addr), ntohs(localaddr.sin_port));
-        while (1)
+        for (auto receive = as3::Receive{}; receive.is_normal();)
         {
-            auto message_reveived = as3::receive(new_sock.get());
-            //strcpy(receive_buffer, message_reveived.c_str());
+            auto message_reveived = receive(new_sock);
             cout << "The client is sending:\n" << message_reveived << endl;
-            //memset(&send_buffer, 0, BUFFESIZE);
             auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + std::to_string(message_reveived.size()) + " bytes in total\r\n";
-            //sprintf(send_buffer, "<<< SERVER SAYS:The client typed '%s' - There are %d bytes of information\r\n", receive_buffer, message_reveived.size());
             as3::send(new_sock.get(), feed_back);
         }
         cout << "disconnected from " << inet_ntoa(remoteaddr.sin_addr) << endl;
