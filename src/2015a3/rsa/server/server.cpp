@@ -14,6 +14,16 @@ namespace as3
         memset(&addr, 0, sizeof(addr));
         return addr;
     }
+
+    auto inline bind(as3::Socket const& sock, sockaddr_in const& addr) -> bool
+    {
+        if ( 0 != ::bind(sock.get(), (struct sockaddr *)(&addr), sizeof(addr)) )
+        {
+            as3::println("Bind failed!");
+            return false;
+        }
+        return true;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -30,11 +40,12 @@ int main(int argc, char *argv[])
         local_addr.sin_addr.s_addr = INADDR_ANY;//server IP address should be local
     }
 
-    if (bind(sock.get(), (struct sockaddr *)(&local_addr), sizeof(local_addr)) != 0)
-    {
-        as3::println("Bind failed!");
-        exit(0);
-    }
+    if (as3::bind(sock, local_addr) == false) return 1;
+    //if (bind(sock.get(), (struct sockaddr *)(&local_addr), sizeof(local_addr)) != 0)
+    //{
+    //    as3::println("Bind failed!");
+    //    exit(0);
+    //}
 
     auto remote_addr = as3::make_address();
     for (listen(sock.get(), 5); true; as3::println("disconnected from " + string(inet_ntoa(remote_addr.sin_addr))))
@@ -47,6 +58,7 @@ int main(int argc, char *argv[])
         for (auto receive = as3::Receive{}; receive.is_normal(); )
         {
             auto message_reveived = receive(new_sock);
+            if (!receive.is_normal()) break;
             as3::println("The client is sending:\n" + message_reveived);
             
             auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + to_string(message_reveived.size()) + " bytes in total\r\n";

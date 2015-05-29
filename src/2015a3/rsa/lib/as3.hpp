@@ -57,12 +57,7 @@ namespace as3
             auto received = string();
             for (auto ch = char(0); true; /* */) //receive char by char, end on an LF, ignore CR's
             {
-                if (0 >= recv(sock.get(), &ch, 1, 0)) 
-                { 
-                    is_normal_ = false;
-                    println("recv failed"); 
-                    break;
-                }
+                if (0 >= recv(sock.get(), &ch, 1, 0)) { is_normal_ = false; break; }
                 if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
             }
             return received;
