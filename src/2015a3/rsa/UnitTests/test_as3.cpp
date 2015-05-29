@@ -94,6 +94,8 @@ namespace UnitTests
             Assert::AreEqual(209, as3::rsa::read_char_as_int(char(209)));
             Assert::AreEqual(187, as3::rsa::read_char_as_int(char(187)));
             Assert::AreEqual(143, as3::rsa::read_char_as_int(char(143)));
+            for (int i = 0; i != 256; ++i)
+                Assert::AreEqual(i, as3::rsa::read_char_as_int(char(i)));
         }
 
     };

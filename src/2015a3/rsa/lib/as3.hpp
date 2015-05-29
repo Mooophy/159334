@@ -7,8 +7,6 @@ using std::string;
 using std::cout; using std::endl; using std::cin; using std::ostream;
 #include <vector>
 using std::vector;
-#include <tuple>
-using std::make_tuple;
 
 
 namespace as3
