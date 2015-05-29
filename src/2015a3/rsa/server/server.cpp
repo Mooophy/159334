@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     memset(&send_buffer, 0, BUFFESIZE);
     memset(&receive_buffer, 0, BUFFESIZE);
 
-    int n, bytes, addrlen;
+    int bytes, addrlen;
     memset(&localaddr, 0, sizeof(localaddr));//clean up the structure
     memset(&remoteaddr, 0, sizeof(remoteaddr));//clean up the structure
 
@@ -63,16 +63,12 @@ int main(int argc, char *argv[])
         while (1)
         {
             auto message_reveived = as3::receive(new_sock.get());
-            strcpy(receive_buffer, message_reveived.c_str());
-            printf("The client is sending: %s\n", receive_buffer);
-            memset(&send_buffer, 0, BUFFESIZE);
-            sprintf(send_buffer, "<<< SERVER SAYS:The client typed '%s' - There are %d bytes of information\r\n", receive_buffer, message_reveived.size());
-
-            //********************************************************************
-            //SEND
-            //********************************************************************
-            bytes = send(new_sock.get(), send_buffer, strlen(send_buffer), 0);
-            if (bytes < 0) break;
+            //strcpy(receive_buffer, message_reveived.c_str());
+            cout << "The client is sending:\n" << message_reveived << endl;
+            //memset(&send_buffer, 0, BUFFESIZE);
+            auto feed_back = "<<< SERVER SAYS:The client typed '" + message_reveived + "' -- " + std::to_string(message_reveived.size()) + " bytes in total\r\n";
+            //sprintf(send_buffer, "<<< SERVER SAYS:The client typed '%s' - There are %d bytes of information\r\n", receive_buffer, message_reveived.size());
+            as3::send(new_sock.get(), feed_back);
         }
         cout << "disconnected from " << inet_ntoa(remoteaddr.sin_addr) << endl;
     }

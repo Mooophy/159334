@@ -33,7 +33,7 @@ namespace as3
         const SOCKET socket_;
     };
 
-    auto inline setup_win_sock_api(WORD version_required) -> WSADATA
+    auto setup_win_sock_api(WORD version_required) -> WSADATA
     {
         WSADATA wsadata;
         if (WSAStartup(WSVERS, &wsadata) != 0)
@@ -55,5 +55,11 @@ namespace as3
             if (ch == '\n') break; else if (ch == '\r') continue; else received.push_back(ch);
         }
         return received;
+    }
+
+    auto send(SOCKET sock, string const& send_buffer) -> void
+    {
+        auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
+        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
     }
 }//namespace

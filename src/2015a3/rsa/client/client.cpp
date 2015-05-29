@@ -35,12 +35,6 @@ namespace as3
             exit(1);
         }
     }
-
-    auto send(SOCKET sock, string const& send_buffer) -> void
-    {
-        auto bytes_sent = ::send(sock, send_buffer.c_str(), send_buffer.size(), 0);
-        if (bytes_sent < 0) { cout << "send failed\n"; exit(1); }
-    }
 }//namespace as3
 
 
