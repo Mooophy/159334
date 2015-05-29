@@ -22,7 +22,6 @@ namespace as3
     {
         if (arguments_count != 3)
         {
-            //cout << "USAGE: client IP-address port" << endl;
             as3::println("USAGE: client IP-address port");
             exit(1);
         }
@@ -58,7 +57,8 @@ auto main(int argc, char *argv[]) -> int
 
     for (auto input = string{}; cin >> input && input != "."; /* */)
     {
-        for (auto& ch : input) ch = pub_key(ch);
+        for (auto& ch : input) 
+            ch = pub_key.calculate(ch);
         as3::send(sock.get(), input + "\r\n");
         as3::println(receive(sock));
     }

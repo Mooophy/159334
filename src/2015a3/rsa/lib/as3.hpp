@@ -97,7 +97,7 @@ namespace as3
         struct BinKey
         {
             int const n, e_or_d;
-            auto operator()(int m) const -> int
+            auto calculate(int m) const -> int
             { 
                 return repeat_square(m, e_or_d, n); 
             }
