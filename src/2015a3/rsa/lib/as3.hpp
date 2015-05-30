@@ -89,8 +89,9 @@ namespace as3
             return y; 
         }
 
-        auto inline encode(int in) -> int { return in + 20; }
-        auto inline decode(int in) -> int { return in - 20; }
+        const int ENCODING_OFFSET = 40;
+        auto inline encode(int in) -> int { return in + ENCODING_OFFSET; }
+        auto inline decode(int in) -> int { return in - ENCODING_OFFSET; }
 
         auto read_char_as_int(char ch) -> int
         {
@@ -105,14 +106,6 @@ namespace as3
         struct BinKey
         {
             int const n, e_or_d;
-
-            //auto calculate(string const& in) const -> string
-            //{
-            //    auto out = in;
-            //    for (auto& ch : out)
-            //        ch = calculate(read_char_as_int(ch));
-            //    return out;
-            //}
 
             auto encrypt(string const& in) const -> string
             {
