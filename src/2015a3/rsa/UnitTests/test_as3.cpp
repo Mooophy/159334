@@ -25,6 +25,7 @@ namespace UnitTests
             for (int i = 0; i != 127; ++i)
             {
                 auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                Assert::IsTrue(en < key.n);
                 auto de = as3::rsa::repeat_square(en, key.d, key.n);
                 Assert::AreEqual(i, de);
             }
@@ -36,6 +37,7 @@ namespace UnitTests
             for (int i = 0; i != 127; ++i)
             {
                 auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                Assert::IsTrue(en < key.n);
                 auto de = as3::rsa::repeat_square(en, key.d, key.n);
                 Assert::AreEqual(i, de);
             }
@@ -47,6 +49,7 @@ namespace UnitTests
             for (int i = 0; i != 127; ++i)
             {
                 auto en = as3::rsa::repeat_square(i, key.e, key.n);
+                Assert::IsTrue(en < key.n);
                 auto de = as3::rsa::repeat_square(en, key.d, key.n);
                 Assert::AreEqual(i, de);
             }
