@@ -106,11 +106,27 @@ namespace as3
         {
             int const n, e_or_d;
 
-            auto calculate(string const& in) const -> string
+            //auto calculate(string const& in) const -> string
+            //{
+            //    auto out = in;
+            //    for (auto& ch : out)
+            //        ch = calculate(read_char_as_int(ch));
+            //    return out;
+            //}
+
+            auto encrypt(string const& in) const -> string
             {
                 auto out = in;
                 for (auto& ch : out)
-                    ch = calculate(read_char_as_int(ch));
+                    ch = encode(calculate(read_char_as_int(ch)));
+                return out;
+            }
+
+            auto decrypt(string const& in) const -> string
+            {
+                auto out = in;
+                for (auto& ch : out)
+                    ch = calculate(decode(read_char_as_int(ch)));
                 return out;
             }
 

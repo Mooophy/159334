@@ -31,7 +31,6 @@ namespace as3
     {
         if (0 != ::connect(s.get(), (sockaddr*)&remote_addr, sizeof(remote_addr)))
         {
-            //cout << "connect failed\n";
             as3::println("connect failed");
             exit(1);
         }
@@ -57,7 +56,7 @@ auto main(int argc, char *argv[]) -> int
 
     for (auto input = string{}; cin >> input && input != "."; /* */)
     {
-        auto msg_enc = pub_key.calculate(input);
+        auto msg_enc = pub_key.encrypt(input);
         as3::send(sock.get(), msg_enc + "\r\n");
         as3::println(receive(sock));
     }

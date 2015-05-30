@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
         {
             auto msg_en = receive(new_sock);
             if (!receive.is_normal()) break;
-            as3::println("The original was:\n'" + msg_en + "'");
+            as3::println("---------\nThe original was:\n'" + msg_en + "'");
 
-            auto msg_de = prv_key.calculate(msg_en);
+            auto msg_de = prv_key.decrypt(msg_en);
             as3::println("The decrypted is:\n'" + msg_de + "'");
 
             auto feed_back = "<<< SERVER SAYS:The client typed '" + msg_en + "' -- " + to_string(msg_en.size()) + " bytes in total\r\n";
