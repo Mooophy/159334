@@ -62,19 +62,19 @@ int main(int argc, char *argv[])
         
         as3::send(new_sock.get(), string("pk=") + key_list.current_public_key().to_str() + "\r\n");
         auto prv_key = key_list.current_private_key();
-        for (auto receive = as3::Receive{};;)
+        for (auto receive = as3::Receive{}; ; )
         {
             auto msg_en = receive(new_sock);
             if (!receive.is_normal()) break;
             as3::println("The original was:\n'" + msg_en + "'");
-            auto msg_de = msg_en;
-            for (auto& ch : msg_de) 
-                ch = prv_key.calculate(as3::rsa::read_char_as_int(ch));
+
+            auto msg_de = prv_key.calculate(msg_en);
             as3::println("The decrypted is:\n'" + msg_de + "'");
 
             auto feed_back = "<<< SERVER SAYS:The client typed '" + msg_en + "' -- " + to_string(msg_en.size()) + " bytes in total\r\n";
             as3::send(new_sock.get(), feed_back);
         }
+        key_list.next();
     }
     return 0;
 }

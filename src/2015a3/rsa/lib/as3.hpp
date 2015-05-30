@@ -89,6 +89,11 @@ namespace as3
             return y; 
         }
 
+        auto read_char_as_int(char ch) -> int
+        {
+            return ch < 0 ? 256 + ch : ch;
+        }
+
         struct TriKey
         {
             int const n, e, d;
@@ -97,6 +102,15 @@ namespace as3
         struct BinKey
         {
             int const n, e_or_d;
+
+            auto calculate(string const& in) const -> string
+            {
+                auto out = in;
+                for (auto& ch : out)
+                    ch = calculate(read_char_as_int(ch));
+                return out;
+            }
+
             auto calculate(int m) const -> int
             { 
                 return repeat_square(m, e_or_d, n); 
@@ -139,10 +153,5 @@ namespace as3
             vector<TriKey> const list_;
             mutable vector<TriKey>::const_iterator curr_;
         };
-
-        auto read_char_as_int(char ch) -> int
-        {
-            return ch < 0 ? 256 + ch : ch;
-        }
     }
 }//namespace
