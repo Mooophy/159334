@@ -89,6 +89,9 @@ namespace as3
             return y; 
         }
 
+        auto inline encode(int in) -> int { return in + 20; }
+        auto inline decode(int in) -> int { return in - 20; }
+
         auto read_char_as_int(char ch) -> int
         {
             return ch < 0 ? 256 + ch : ch;
@@ -111,13 +114,15 @@ namespace as3
                 return out;
             }
 
-            auto calculate(int m) const -> int
-            { 
-                return repeat_square(m, e_or_d, n); 
-            }
             auto to_str() const -> string
             { 
                 return{ char(n), char(e_or_d) }; 
+            }
+
+        private:
+            auto calculate(int m) const -> int
+            {
+                return repeat_square(m, e_or_d, n);
             }
         };
 

@@ -57,9 +57,8 @@ auto main(int argc, char *argv[]) -> int
 
     for (auto input = string{}; cin >> input && input != "."; /* */)
     {
-        for (auto& ch : input) 
-            ch = pub_key.calculate(ch);
-        as3::send(sock.get(), input + "\r\n");
+        auto msg_enc = pub_key.calculate(input);
+        as3::send(sock.get(), msg_enc + "\r\n");
         as3::println(receive(sock));
     }
 
